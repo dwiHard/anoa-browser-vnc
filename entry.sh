@@ -3,23 +3,29 @@ set -e
 
 rm -f /tmp/.X0-lock /tmp/.X11-unix/X0
 
-Xvfb :0 -screen 0 "${RESOLUTION}x24" -ac -noreset &
+Xvfb :0 -screen 0 "${RESOLUTION}x24" +extension RANDR -ac -noreset &
 
 until [ -e /tmp/.X11-unix/X0 ]; do
     sleep 0.5
 done
 
+mkdir -p /root/.fluxbox
+cat << 'EOF' > /root/.fluxbox/apps
+[app] (name=.*)
+  [Maximized] {yes}
+  [Decor] {NONE}
+[end]
+EOF
+
 fluxbox &
 
 if [ -n "$VNC_PASSWORD" ]; then
-    x11vnc -display :0 -forever -shared -rfbport 5900 -passwd "$VNC_PASSWORD" -xkb -noxrecord -noxfixes -noxdamage &
+    x11vnc -display :0 -forever -shared -rfbport 5900 -passwd "$VNC_PASSWORD" -xrandr -xkb -noxrecord -noxfixes -noxdamage &
 else
-    x11vnc -display :0 -forever -shared -rfbport 5900 -nopw -xkb -noxrecord -noxfixes -noxdamage &
+    x11vnc -display :0 -forever -shared -rfbport 5900 -nopw -xrandr -xkb -noxrecord -noxfixes -noxdamage &
 fi
 
 /usr/share/novnc/utils/novnc_proxy --vnc localhost:5900 --listen 6900 &
-
-socat TCP-LISTEN:9225,fork,reuseaddr TCP:127.0.0.1:9223 &
 
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8

@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: anoa-fluxbox:0.1.0
+    image: anoa-fluxbox:latest
     container_name: anoa-desktop
     restart: unless-stopped
     shm_size: "1gb"
