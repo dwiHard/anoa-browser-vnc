@@ -1,0 +1,32 @@
+services:
+  anoa-browser:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: anoa-fluxbox:0.1.0
+    container_name: anoa-desktop
+    restart: unless-stopped
+    shm_size: "1gb"
+    devices:
+      - /dev/fuse:/dev/fuse
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    ports:
+      - "6900:6900"
+      - "9224:9224"
+      - "9225:9225"
+    environment:
+      - DISPLAY=:0
+      - RESOLUTION=1366x768
+      - VNC_PASSWORD=rahasia
+      - CDP_AUTH_TOKEN=
+      - HOME=/root
+    volumes:
+      - ./anoa-profile:/root/.local/share
+      - ./anoa-config:/root/.config
+
+volumes:
+  anoa-profile:
+  anoa-config:
